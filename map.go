@@ -62,6 +62,12 @@ func (m *Map[K, V]) Merge(subset *Map[K, V]) {
 	}
 }
 
+func (m *Map[K, V]) MergeRaw(subset map[K]V) {
+	for k, v := range subset {
+		m.Set(k, v)
+	}
+}
+
 // SyncMap provides Map with RW-mutex protected.
 type SyncMap[K comparable, V any] struct {
 	It      Map[K, V]

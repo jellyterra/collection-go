@@ -37,8 +37,15 @@ func (m *Map[K, V]) Foreach(f func(K, V) error) error {
 	return nil
 }
 
+func (m *Map[K, V]) Get(k K) (V, bool) {
+	v, ok := m.Raw[k]
+	return v, ok
+}
+
 func (m *Map[K, V]) Delete(k K) { delete(m.Raw, k) }
 
+// Set key-value pair.
+// It's designed to avoid writing to a nil Go map.
 func (m *Map[K, V]) Set(k K, v V) {
 	if m.Raw == nil {
 		m.Raw = make(map[K]V)
@@ -47,9 +54,12 @@ func (m *Map[K, V]) Set(k K, v V) {
 	m.Raw[k] = v
 }
 
-func (m *Map[K, V]) Get(k K) (V, bool) {
-	v, ok := m.Raw[k]
-	return v, ok
+// Merge adds or overrides the key-value pairs from `subset` to `m`.
+// It's designed to avoid writing to a nil Go map.
+func (m *Map[K, V]) Merge(subset *Map[K, V]) {
+	for k, v := range subset.Raw {
+		m.Set(k, v)
+	}
 }
 
 // SyncMap provides Map with RW-mutex protected.
